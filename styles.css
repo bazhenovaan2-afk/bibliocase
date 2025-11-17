@@ -1,0 +1,256 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #1e5f5b;
+    --primary-dark: #153f3c;
+    --accent: #d4a574;
+    --background: #faf8f5;
+    --surface: #ffffff;
+    --text: #2a2a2a;
+    --text-muted: #6b6b6b;
+    --border: #e5e0d8;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+}
+
+/* Header Styles */
+.header {
+    margin-bottom: 4rem;
+}
+
+.main-title {
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 700;
+    text-align: center;
+    color: var(--primary-dark);
+    margin-bottom: 3rem;
+    letter-spacing: -0.02em;
+}
+
+/* Search Section */
+.search-section {
+    max-width: 48rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.search-input-wrapper,
+.hashtag-select-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon,
+.hashtag-icon {
+    position: absolute;
+    left: 1rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.chevron-icon {
+    position: absolute;
+    right: 1rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.search-input,
+.hashtag-select {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 2px solid var(--border);
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    background-color: var(--surface);
+    color: var(--text);
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.hashtag-select {
+    padding-right: 3rem;
+    appearance: none;
+    cursor: pointer;
+}
+
+.search-input:focus,
+.hashtag-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30, 95, 91, 0.1);
+}
+
+.search-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* Masonry Grid with Staggered Layout */
+.masonry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    align-items: start;
+}
+
+@media (min-width: 768px) {
+    .masonry-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .masonry-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.card {
+    background-color: var(--surface);
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+/* Staggered offset effect */
+.card-offset-1 {
+    transform: translateY(0);
+}
+
+.card-offset-2 {
+    transform: translateY(2rem);
+}
+
+.card-offset-3 {
+    transform: translateY(4rem);
+}
+
+@media (max-width: 1023px) {
+    .card-offset-3 {
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 767px) {
+    .card-offset-2,
+    .card-offset-3 {
+        transform: translateY(0);
+    }
+}
+
+.card:hover {
+    transform: translateY(-0.75rem) scale(1.02);
+    box-shadow: 0 20px 40px rgba(30, 95, 91, 0.15);
+}
+
+.card-offset-2:hover {
+    transform: translateY(1.25rem) scale(1.02);
+}
+
+.card-offset-3:hover {
+    transform: translateY(3.25rem) scale(1.02);
+}
+
+@media (max-width: 1023px) {
+    .card-offset-3:hover {
+        transform: translateY(-0.75rem) scale(1.02);
+    }
+}
+
+@media (max-width: 767px) {
+    .card-offset-2:hover,
+    .card-offset-3:hover {
+        transform: translateY(-0.75rem) scale(1.02);
+    }
+}
+
+.card-image {
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+    position: relative;
+}
+
+.card-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card:hover .card-image::after {
+    opacity: 1;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+
+.card:hover .card-image img {
+    transform: scale(1.08);
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    line-height: 1.4;
+    transition: color 0.3s ease;
+}
+
+.card:hover .card-title {
+    color: var(--primary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .container {
+        padding: 2rem 1rem;
+    }
+    
+    .header {
+        margin-bottom: 2.5rem;
+    }
+    
+    .main-title {
+        margin-bottom: 2rem;
+    }
+    
+    .card-image {
+        height: 220px;
+    }
+}
