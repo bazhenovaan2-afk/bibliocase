@@ -6,8 +6,42 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Main page of website</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
+    <header>
+        <h1 class="main-title main-page-title">BiblioCase</h1>
+    </header>
+    <nav>
+        <ul class="main-menu">
+            <li class="main-search-section"><a href="https://bibliocase.onrender.com">Коллекции</a></li>
+            <li class="main-search-section"><a href="/create-case.html">Создать кейс</a></li>
+            <li class="main-search-section"><a href="/login.html">Войти</a></li>
+        </ul>
+    </nav>
+    <section class="main-section">
+        <h1 class="main-section-text">Сохраняй и делись своими профессиональными кейсами</h1>
+        <p class="main-section-subtext">Платформа для обмена опытом и знаниями</p>
+        <form action="/create-case.html" class="main-section-btn">
+            <input type="submit" value="Создать первый кейс">
+        </form>
+        <div class="statistics-container">
+            <div class="statistics">
+                <h3 class="statistics-number">1,234</h3>
+                <p class="main-section-subtext">кейсов</p>
+            </div>
+            <div class="statistics">
+                <h3 class="statistics-number">567</h3>
+                <p class="main-section-subtext">авторов</p>
+            </div>
+            <div class="statistics">
+                <h3 class="statistics-number">89</h3>
+                <p class="main-section-subtext">компаний</p>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <p class="main-section-subtext">&copy; 2025 BiblioCase. Все права защищены.</p>
+    </footer>
 </body>
 </html>
