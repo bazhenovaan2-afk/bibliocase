@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Signup logic</title>
+    <title>Регистрация - BiblioCase</title>
     <link rel="stylesheet" href="../Styles/login%20and%20signup.css">
     <link rel="stylesheet" href="../Styles/default-settings.css">
 </head>
@@ -13,16 +13,87 @@
 <div id="login-form-header">
     <h1 class="bibliocase-main-text">BiblioCase</h1>
     <h4 class="hint-for-login">Введите новые данные</h4>
-    <form action="" id="login-form"> <!-- actions="путь на серверный скрипт для бекенда"-->
+    <form id="signup-form">
         <label for="username">Введите имя пользователя:</label>
-        <input type="text" required class="form" id="username" name="username" placeholder="Введите свой юсернейм">
+        <input type="text" required class="form" id="username" name="username" placeholder="Введите свой юзернейм">
         <label for="password">Введите пароль:</label>
         <input type="password" required class="form" id="password" name="password" placeholder="Введите свой пароль">
         <label for="password-again">Подтвердите пароль:</label>
-        <input type="password" required class="form" id="password-again" name="password" placeholder="Введите свой пароль">
+        <input type="password" required class="form" id="password-again" name="password-again" placeholder="Подтвердите пароль">
     </form>
-    <button type="submit" class="form login-btn">Зарегистрироваться</button>
+    <button type="submit" class="form login-btn" id="signup-btn">Зарегистрироваться</button>
+    <div id="message" class="message"></div>
     <p>Уже зарегистрированы? <a href="login.html">Войти</a></p>
 </div>
+
+<script>
+    const API_URL = 'http://localhost:5000/api';
+    
+    document.getElementById('signup-btn').addEventListener('click', async function() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const passwordAgain = document.getElementById('password-again').value;
+        const messageDiv = document.getElementById('message');
+        
+        if (!username || !password || !passwordAgain) {
+            showMessage('Заполните все поля', 'error');
+            return;
+        }
+        
+        if (password !== passwordAgain) {
+            showMessage('Пароли не совпадают', 'error');
+            return;
+        }
+        
+        if (password.length < 6) {
+            showMessage('Пароль должен содержать минимум 6 символов', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_URL}/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                localStorage.setItem('user_id', data.user_id);
+                localStorage.setItem('username', data.username);
+                showMessage('Регистрация успешна!', 'success');
+                setTimeout(() => {
+                    window.location.href = 'main.html';
+                }, 1000);
+            } else {
+                showMessage(data.error || 'Ошибка регистрации', 'error');
+            }
+        } catch (error) {
+            showMessage('Ошибка соединения с сервером', 'error');
+        }
+    });
+    
+    // Также обрабатываем отправку формы по Enter
+    document.getElementById('signup-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('signup-btn').click();
+    });
+    
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = text;
+        messageDiv.className = `message ${type}`;
+        messageDiv.style.display = 'block';
+        
+        if (type === 'success') {
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+    }
+</script>
 </body>
 </html>

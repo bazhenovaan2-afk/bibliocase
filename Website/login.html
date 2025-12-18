@@ -1,26 +1,86 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Signup logic</title>
+    <title>Вход - BiblioCase</title>
     <link rel="stylesheet" href="../Styles/login%20and%20signup.css">
     <link rel="stylesheet" href="../Styles/default-settings.css">
 </head>
 <body>
 <div id="login-form-header">
     <h1 class="bibliocase-main-text">BiblioCase</h1>
-    <h4 class="hint-for-login">Введите новые данные</h4>
-    <form action="" id="login-form"> <!-- actions="путь на серверный скрипт для бекенда"-->
+    <h4 class="hint-for-login">Введите данные для входа</h4>
+    <form id="login-form">
         <label for="username">Введите имя пользователя:</label>
-        <input type="text" required class="form" id="username" name="username" placeholder="Введите свой юсернейм">
+        <input type="text" required class="form" id="username" name="username" placeholder="Введите свой юзернейм">
         <label for="password">Введите пароль:</label>
         <input type="password" required class="form" id="password" name="password" placeholder="Введите свой пароль">
     </form>
-    <button type="submit" class="form login-btn">Войти</button>
+    <button type="submit" class="form login-btn" id="login-btn">Войти</button>
+    <div id="message" class="message"></div>
     <p>Нет аккаунта? <a href="signup.html">Зарегистрироваться</a></p>
 </div>
+
+<script>
+    const API_URL = 'http://localhost:5000/api';
+    
+    document.getElementById('login-btn').addEventListener('click', async function() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const messageDiv = document.getElementById('message');
+        
+        if (!username || !password) {
+            showMessage('Заполните все поля', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_URL}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                localStorage.setItem('user_id', data.user_id);
+                localStorage.setItem('username', data.username);
+                showMessage('Вход выполнен успешно!', 'success');
+                setTimeout(() => {
+                    window.location.href = 'main.html';
+                }, 1000);
+            } else {
+                showMessage(data.error || 'Ошибка входа', 'error');
+            }
+        } catch (error) {
+            showMessage('Ошибка соединения с сервером', 'error');
+        }
+    });
+    
+    // Также обрабатываем отправку формы по Enter
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('login-btn').click();
+    });
+    
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = text;
+        messageDiv.className = `message ${type}`;
+        messageDiv.style.display = 'block';
+        
+        if (type === 'success') {
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+    }
+</script>
 </body>
 </html>
