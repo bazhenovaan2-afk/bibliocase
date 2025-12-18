@@ -12,7 +12,7 @@ CORS(app)
 
 # Конфигурация
 DATABASE = 'bibliocase.db'
-UPLOAD_FOLDER = 'uploads'
+UPLOAD_FOLDER = 'static\\uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
 # Создаем папку для загрузок
