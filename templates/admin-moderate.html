@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модерация кейсов - BiblioCase</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/default-settings.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-moderate.css') }}">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <h1 class="admin-logo">BiblioCase - Модерация</h1>
+            <nav class="admin-nav">
+                <a href="{{ url_for('index') }}">Главная</a>
+                <a href="{{ url_for('collections') }}">Коллекции</a>
+                <span class="user-profile">
+                    <span class="user-name" id="user-name"></span>
+                    <button class="logout-btn" onclick="logout()">Выйти</button>
+                </span>
+            </nav>
+        </header>
+
+        <main class="admin-main">
+            <div class="admin-content">
+                <h2 class="admin-title">Кейсы на модерации</h2>
+                
+                <div id="loading" class="loading-indicator" style="display: none;">
+                    <p>Загрузка кейсов...</p>
+                </div>
+
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <p>Нет кейсов на модерации</p>
+                </div>
+
+                <div id="pending-cases" class="pending-cases">
+                    <!-- Кейсы будут загружены динамически -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        const currentUserId = localStorage.getItem('user_id');
+        const username = localStorage.getItem('username');
+        const isAdmin = localStorage.getItem('is_admin') === 'true';
+
+        // Проверка прав доступа
+        if (!currentUserId || !isAdmin) {
+            alert('Доступ запрещен. Требуются права администратора.');
+            window.location.href = '/';
+        }
+
+        if (username) {
+            document.getElementById('user-name').textContent = username;
+        }
+
+        function logout() {
+            localStorage.removeItem('user_id');
+            localStorage.removeItem('username');
+            localStorage.removeItem('is_admin');
+            window.location.href = '/';
+        }
+
+        async function loadPendingCases() {
+            const loadingDiv = document.getElementById('loading');
+            const emptyState = document.getElementById('empty-state');
+            const casesDiv = document.getElementById('pending-cases');
+            
+            loadingDiv.style.display = 'block';
+            emptyState.style.display = 'none';
+            casesDiv.innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_URL}/pending-cases?user_id=${currentUserId}`);
+                const cases = await response.json();
+
+                loadingDiv.style.display = 'none';
+
+                if (cases.length === 0) {
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                displayCases(cases);
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                emptyState.style.display = 'block';
+                console.error('Ошибка загрузки кейсов:', error);
+            }
+        }
+
+        function displayCases(cases) {
+            const casesDiv = document.getElementById('pending-cases');
+            casesDiv.innerHTML = '';
+
+            cases.forEach(caseItem => {
+                const caseCard = document.createElement('div');
+                caseCard.className = 'pending-case-card';
+                
+                const imageUrl = caseItem.image_path 
+                    ? `http://localhost:5000${caseItem.image_path}`
+                    : 'https://via.placeholder.com/300x200?text=No+Image';
+
+                caseCard.innerHTML = `
+                    <div class="case-preview">
+                        ${caseItem.image_path ? `
+                            <img src="${imageUrl}" alt="${escapeHtml(caseItem.title)}" class="case-preview-image">
+                        ` : ''}
+                        <div class="case-preview-content">
+                            <h3 class="case-preview-title">${escapeHtml(caseItem.title)}</h3>
+                            <p class="case-preview-category">${escapeHtml(caseItem.category)}</p>
+                            <p class="case-preview-author">Автор: ${escapeHtml(caseItem.username || 'Неизвестен')}</p>
+                            <p class="case-preview-text">${escapeHtml(caseItem.content.substring(0, 200))}${caseItem.content.length > 200 ? '...' : ''}</p>
+                            <div class="case-preview-meta">
+                                <span class="case-preview-date">${new Date(caseItem.created_at).toLocaleDateString('ru-RU')}</span>
+                                <span class="case-preview-likes">❤️ ${caseItem.likes_count || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="case-actions">
+                        <button class="btn-approve" onclick="approveCase(${caseItem.id}, this)">
+                            ✓ Одобрить
+                        </button>
+                        <button class="btn-reject" onclick="rejectCase(${caseItem.id}, this)">
+                            ✕ Отклонить
+                        </button>
+                    </div>
+                `;
+
+                casesDiv.appendChild(caseCard);
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function approveCase(caseId, button) {
+            if (!confirm('Одобрить этот кейс?')) return;
+
+            button.disabled = true;
+            button.textContent = 'Одобряется...';
+
+            try {
+                const response = await fetch(`${API_URL}/cases/${caseId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_id: parseInt(currentUserId) })
+                });
+
+                if (response.ok) {
+                    button.textContent = '✓ Одобрено';
+                    button.classList.add('approved');
+                    setTimeout(() => {
+                        loadPendingCases();
+                    }, 1000);
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Ошибка при одобрении кейса');
+                    button.disabled = false;
+                    button.textContent = '✓ Одобрить';
+                }
+            } catch (error) {
+                console.error('Ошибка при одобрении кейса:', error);
+                alert('Ошибка соединения с сервером');
+                button.disabled = false;
+                button.textContent = '✓ Одобрить';
+            }
+        }
+
+        async function rejectCase(caseId, button) {
+            if (!confirm('Отклонить этот кейс? Кейс будет удален.')) return;
+
+            button.disabled = true;
+            button.textContent = 'Отклоняется...';
+
+            try {
+                const response = await fetch(`${API_URL}/cases/${caseId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_id: parseInt(currentUserId) })
+                });
+
+                if (response.ok) {
+                    button.textContent = '✕ Отклонено';
+                    button.classList.add('rejected');
+                    setTimeout(() => {
+                        loadPendingCases();
+                    }, 1000);
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Ошибка при отклонении кейса');
+                    button.disabled = false;
+                    button.textContent = '✕ Отклонить';
+                }
+            } catch (error) {
+                console.error('Ошибка при отклонении кейса:', error);
+                alert('Ошибка соединения с сервером');
+                button.disabled = false;
+                button.textContent = '✕ Отклонить';
+            }
+        }
+
+        // Инициализация
+        loadPendingCases();
+    </script>
+</body>
+</html>
+

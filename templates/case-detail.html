@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр кейса - BiblioCase</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/default-settings.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/case-detail.css') }}">
+</head>
+<body>
+    <div class="case-detail-container">
+        <header class="case-detail-header">
+            <h1 class="case-detail-logo">BiblioCase</h1>
+            <nav class="case-detail-nav">
+                <a href="{{ url_for('index') }}">Главная</a>
+                <a href="{{ url_for('collections') }}">Коллекции</a>
+                <a href="{{ url_for('create_case_page') }}">Создать кейс</a>
+                <span id="user-profile" class="user-profile" style="display: none;">
+                    <span class="user-name" id="user-name"></span>
+                    <button class="logout-btn" id="logout-btn" onclick="logout()">Выйти</button>
+                </span>
+                <a href="{{ url_for('login_page') }}" id="login-link" class="login-link">Войти</a>
+            </nav>
+        </header>
+
+        <main class="case-detail-main">
+            <div class="case-detail-content">
+                <button class="back-button" onclick="window.location.href='{{ url_for('collections') }}'">
+                    ← Назад к коллекциям
+                </button>
+
+                <div id="loading" class="loading-indicator">
+                    <p>Загрузка кейса...</p>
+                </div>
+
+                <div id="case-content" style="display: none;">
+                    <div class="case-header">
+                        <div class="case-title-row">
+                            <h1 class="case-title" id="case-title"></h1>
+                            <div id="like-section" style="display: none;">
+                                <button class="like-button-detail" id="like-button" onclick="toggleLike()">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                    </svg>
+                                    <span class="like-count-detail" id="like-count">0</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="case-meta">
+                            <span class="case-category" id="case-category"></span>
+                            <span class="case-author" id="case-author"></span>
+                            <span class="case-date" id="case-date"></span>
+                        </div>
+                    </div>
+
+                    <div class="case-image-wrapper" id="case-image-wrapper" style="display: none;">
+                        <img id="case-image" class="case-image" alt="Case image">
+                    </div>
+
+                    <div class="case-text">
+                        <div id="case-content-text" class="case-content-text"></div>
+                    </div>
+                </div>
+
+                <div id="error-message" class="error-message" style="display: none;">
+                    <p>Кейс не найден или произошла ошибка при загрузке.</p>
+                    <a href="{{ url_for('collections') }}">Вернуться к коллекциям</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let currentCaseData = null;
+        
+        // Проверка авторизации
+        const currentUserId = localStorage.getItem('user_id');
+        const username = localStorage.getItem('username');
+        const isAdmin = localStorage.getItem('is_admin') === 'true';
+        
+        if (username && currentUserId) {
+            document.getElementById('login-link').style.display = 'none';
+            document.getElementById('user-profile').style.display = 'flex';
+            document.getElementById('user-name').textContent = username;
+            
+            // Добавляем ссылку на модерацию для админа
+            if (isAdmin) {
+                const nav = document.querySelector('.case-detail-nav');
+                const moderateLink = document.createElement('a');
+                moderateLink.href = '/admin/moderate';
+                moderateLink.textContent = 'Модерация';
+                moderateLink.style.color = 'var(--primary)';
+                moderateLink.style.fontWeight = '600';
+                nav.insertBefore(moderateLink, nav.firstChild);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user_id');
+            localStorage.removeItem('username');
+            localStorage.removeItem('is_admin');
+            window.location.reload();
+        }
+        
+        // Получить ID кейса из URL
+        const pathParts = window.location.pathname.split('/');
+        const caseId = pathParts[pathParts.length - 1];
+
+        if (!caseId || isNaN(caseId)) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error-message').style.display = 'block';
+        } else {
+            loadCase(caseId);
+        }
+
+        async function loadCase(id) {
+            try {
+                let url = `${API_URL}/cases/${id}`;
+                if (currentUserId) {
+                    url += `?user_id=${currentUserId}`;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentCaseData = data;
+                    displayCase(data);
+                } else {
+                    showError();
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки кейса:', error);
+                showError();
+            }
+        }
+
+        function displayCase(caseData) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('case-content').style.display = 'block';
+
+            document.getElementById('case-title').textContent = caseData.title;
+            document.getElementById('case-category').textContent = caseData.category;
+            document.getElementById('case-author').textContent = `Автор: ${caseData.username || 'Неизвестен'}`;
+            
+            const date = new Date(caseData.created_at);
+            document.getElementById('case-date').textContent = date.toLocaleDateString('ru-RU');
+
+            const contentText = document.getElementById('case-content-text');
+            contentText.textContent = caseData.content;
+
+            // Отображение лайков
+            if (currentUserId) {
+                document.getElementById('like-section').style.display = 'block';
+                const likeButton = document.getElementById('like-button');
+                const likeCount = document.getElementById('like-count');
+                const svg = likeButton.querySelector('svg');
+                
+                likeCount.textContent = caseData.likes_count || 0;
+                
+                if (caseData.is_liked) {
+                    likeButton.classList.add('liked');
+                    svg.setAttribute('fill', 'currentColor');
+                } else {
+                    likeButton.classList.remove('liked');
+                    svg.setAttribute('fill', 'none');
+                }
+            }
+
+            if (caseData.image_path) {
+                const imageWrapper = document.getElementById('case-image-wrapper');
+                const image = document.getElementById('case-image');
+                image.src = `http://localhost:5000${caseData.image_path}`;
+                image.onerror = function() {
+                    imageWrapper.style.display = 'none';
+                };
+                imageWrapper.style.display = 'block';
+            }
+        }
+
+        async function toggleLike() {
+            if (!currentUserId) {
+                window.location.href = '{{ url_for("login_page") }}';
+                return;
+            }
+
+            if (!currentCaseData) return;
+
+            try {
+                const response = await fetch(`${API_URL}/cases/${currentCaseData.id}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_id: parseInt(currentUserId) })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const likeButton = document.getElementById('like-button');
+                    const likeCount = document.getElementById('like-count');
+                    const svg = likeButton.querySelector('svg');
+                    
+                    currentCaseData.is_liked = data.is_liked;
+                    currentCaseData.likes_count = data.likes_count;
+                    
+                    if (data.is_liked) {
+                        likeButton.classList.add('liked');
+                        svg.setAttribute('fill', 'currentColor');
+                    } else {
+                        likeButton.classList.remove('liked');
+                        svg.setAttribute('fill', 'none');
+                    }
+                    
+                    likeCount.textContent = data.likes_count;
+                }
+            } catch (error) {
+                console.error('Ошибка при лайке:', error);
+            }
+        }
+
+        function showError() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error-message').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+

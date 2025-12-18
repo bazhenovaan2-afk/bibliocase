@@ -15,7 +15,7 @@
     </header>
     <nav>
         <ul class="main-menu">
-            <li class="main-search-section"><a href="https://bibliocase.onrender.com">Коллекции</a></li>
+            <li class="main-search-section"><a href="collections.html">Коллекции</a></li>
             <li class="main-search-section"><a href="create-case.html ">Создать кейс</a></li>
             <li class="main-search-section"><a href="login.html">Войти</a></li>
         </ul>
@@ -28,21 +28,41 @@
         </form>
         <div class="statistics-container">
             <div class="statistics">
-                <h3 class="statistics-number">1,234</h3>
+                <h3 class="statistics-number" id="cases-count">0</h3>
                 <p class="main-section-subtext">кейсов</p>
             </div>
             <div class="statistics">
-                <h3 class="statistics-number">567</h3>
+                <h3 class="statistics-number" id="users-count">0</h3>
                 <p class="main-section-subtext">авторов</p>
             </div>
             <div class="statistics">
-                <h3 class="statistics-number">89</h3>
-                <p class="main-section-subtext">компаний</p>
+                <h3 class="statistics-number" id="categories-count">0</h3>
+                <p class="main-section-subtext">категорий</p>
             </div>
         </div>
     </section>
     <footer>
         <p class="main-section-subtext">&copy; 2025 BiblioCase. Все права защищены.</p>
     </footer>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        
+        // Загрузка статистики
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_URL}/stats`);
+                const stats = await response.json();
+                
+                document.getElementById('cases-count').textContent = stats.cases || 0;
+                document.getElementById('users-count').textContent = stats.users || 0;
+                document.getElementById('categories-count').textContent = stats.categories || 0;
+            } catch (error) {
+                console.error('Ошибка загрузки статистики:', error);
+            }
+        }
+        
+        loadStats();
+    </script>
 </body>
 </html>

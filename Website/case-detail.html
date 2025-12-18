@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр кейса - BiblioCase</title>
+    <link rel="stylesheet" href="../Styles/default-settings.css">
+    <link rel="stylesheet" href="../Styles/case-detail.css">
+</head>
+<body>
+    <div class="case-detail-container">
+        <header class="case-detail-header">
+            <h1 class="case-detail-logo">BiblioCase</h1>
+            <nav class="case-detail-nav">
+                <a href="main.html">Главная</a>
+                <a href="collections.html">Коллекции</a>
+                <a href="create-case.html">Создать кейс</a>
+            </nav>
+        </header>
+
+        <main class="case-detail-main">
+            <div class="case-detail-content">
+                <button class="back-button" onclick="window.location.href='collections.html'">
+                    ← Назад к коллекциям
+                </button>
+
+                <div id="loading" class="loading-indicator">
+                    <p>Загрузка кейса...</p>
+                </div>
+
+                <div id="case-content" style="display: none;">
+                    <div class="case-header">
+                        <h1 class="case-title" id="case-title"></h1>
+                        <div class="case-meta">
+                            <span class="case-category" id="case-category"></span>
+                            <span class="case-author" id="case-author"></span>
+                            <span class="case-date" id="case-date"></span>
+                        </div>
+                    </div>
+
+                    <div class="case-image-wrapper" id="case-image-wrapper" style="display: none;">
+                        <img id="case-image" class="case-image" alt="Case image">
+                    </div>
+
+                    <div class="case-text">
+                        <div id="case-content-text" class="case-content-text"></div>
+                    </div>
+                </div>
+
+                <div id="error-message" class="error-message" style="display: none;">
+                    <p>Кейс не найден или произошла ошибка при загрузке.</p>
+                    <a href="collections.html">Вернуться к коллекциям</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        
+        // Получить ID кейса из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const caseId = urlParams.get('id');
+
+        if (!caseId) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error-message').style.display = 'block';
+        } else {
+            loadCase(caseId);
+        }
+
+        async function loadCase(id) {
+            try {
+                const response = await fetch(`${API_URL}/cases/${id}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    displayCase(data);
+                } else {
+                    showError();
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки кейса:', error);
+                showError();
+            }
+        }
+
+        function displayCase(caseData) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('case-content').style.display = 'block';
+
+            document.getElementById('case-title').textContent = caseData.title;
+            document.getElementById('case-category').textContent = caseData.category;
+            document.getElementById('case-author').textContent = `Автор: ${caseData.username || 'Неизвестен'}`;
+            
+            const date = new Date(caseData.created_at);
+            document.getElementById('case-date').textContent = date.toLocaleDateString('ru-RU');
+
+            const contentText = document.getElementById('case-content-text');
+            contentText.textContent = caseData.content;
+            // Можно использовать innerHTML для поддержки форматирования, но для безопасности используем textContent
+
+            if (caseData.image_path) {
+                const imageWrapper = document.getElementById('case-image-wrapper');
+                const image = document.getElementById('case-image');
+                image.src = `http://localhost:5000${caseData.image_path}`;
+                image.onerror = function() {
+                    imageWrapper.style.display = 'none';
+                };
+                imageWrapper.style.display = 'block';
+            }
+        }
+
+        function showError() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error-message').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+

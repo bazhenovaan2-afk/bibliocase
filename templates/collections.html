@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Коллекции - BiblioCase</title>
-    <link rel="stylesheet" href="../Styles/styles.css">
-    <link rel="stylesheet" href="../Styles/default-settings.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/default-settings.css') }}">
 </head>
 <body>
     <div class="container">
@@ -13,9 +13,13 @@
         <header class="header">
             <h1 class="main-title">BiblioCase</h1>
             <nav class="collections-nav">
-                <a href="main.html">Главная</a>
-                <a href="create-case.html">Создать кейс</a>
-                <a href="login.html" id="login-link">Войти</a>
+                <a href="{{ url_for('index') }}">Главная</a>
+                <a href="{{ url_for('create_case_page') }}">Создать кейс</a>
+                <span id="user-profile" class="user-profile" style="display: none;">
+                    <span class="user-name" id="user-name"></span>
+                    <button class="logout-btn" id="logout-btn" onclick="logout()">Выйти</button>
+                </span>
+                <a href="{{ url_for('login_page') }}" id="login-link" class="login-link">Войти</a>
             </nav>
             
             <!-- Search Section -->
@@ -57,7 +61,7 @@
 
         <!-- Empty state -->
         <div id="empty-state" class="empty-state" style="display: none;">
-            <p>Кейсы не найдены. <a href="create-case.html">Создайте первый кейс!</a></p>
+            <p>Кейсы не найдены. <a href="{{ url_for('create_case_page') }}">Создайте первый кейс!</a></p>
         </div>
 
         <!-- Masonry Card Grid -->
@@ -72,10 +76,32 @@
         let allCategories = [];
 
         // Проверка авторизации
+        const currentUserId = localStorage.getItem('user_id');
         const username = localStorage.getItem('username');
-        if (username) {
-            document.getElementById('login-link').textContent = username;
-            document.getElementById('login-link').href = '#';
+        const isAdmin = localStorage.getItem('is_admin') === 'true';
+        
+        if (username && currentUserId) {
+            document.getElementById('login-link').style.display = 'none';
+            document.getElementById('user-profile').style.display = 'flex';
+            document.getElementById('user-name').textContent = username;
+            
+            // Добавляем ссылку на модерацию для админа
+            if (isAdmin) {
+                const nav = document.querySelector('.collections-nav');
+                const moderateLink = document.createElement('a');
+                moderateLink.href = '/admin/moderate';
+                moderateLink.textContent = 'Модерация';
+                moderateLink.style.color = 'var(--primary)';
+                moderateLink.style.fontWeight = '600';
+                nav.insertBefore(moderateLink, nav.firstChild);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user_id');
+            localStorage.removeItem('username');
+            localStorage.removeItem('is_admin');
+            window.location.reload();
         }
 
         // Загрузка категорий
@@ -112,6 +138,7 @@
                 const params = new URLSearchParams();
                 if (search) params.append('search', search);
                 if (category) params.append('category', category);
+                if (currentUserId) params.append('user_id', currentUserId);
                 if (params.toString()) url += '?' + params.toString();
 
                 const response = await fetch(url);
@@ -142,7 +169,12 @@
             cases.forEach((caseItem, index) => {
                 const card = document.createElement('div');
                 card.className = `card card-offset-${(index % 3) + 1}`;
-                card.onclick = () => viewCase(caseItem.id);
+                card.onclick = (e) => {
+                    // Не переходить на страницу кейса при клике на лайк
+                    if (!e.target.closest('.like-button')) {
+                        viewCase(caseItem.id);
+                    }
+                };
 
                 const imageUrl = caseItem.image_path 
                     ? `http://localhost:5000${caseItem.image_path}`
@@ -150,17 +182,73 @@
 
                 card.innerHTML = `
                     <div class="card-image">
-                        <img src="${imageUrl}" alt="${caseItem.title}" onerror="this.src='https://via.placeholder.com/400x280?text=No+Image'">
+                        <img src="${imageUrl}" alt="${escapeHtml(caseItem.title)}" onerror="this.src='https://via.placeholder.com/400x280?text=No+Image'">
                     </div>
                     <div class="card-content">
                         <h3 class="card-title">${escapeHtml(caseItem.title)}</h3>
                         <p class="card-category">${escapeHtml(caseItem.category)}</p>
-                        <p class="card-author">Автор: ${escapeHtml(caseItem.username || 'Неизвестен')}</p>
+                        <div class="card-footer">
+                            <p class="card-author">Автор: ${escapeHtml(caseItem.username || 'Неизвестен')}</p>
+                            <div class="like-container">
+                                ${currentUserId ? `
+                                    <button class="like-button ${caseItem.is_liked ? 'liked' : ''}" 
+                                            onclick="event.stopPropagation(); toggleLike(${caseItem.id}, this)">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="${caseItem.is_liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                        </svg>
+                                        <span class="like-count">${caseItem.likes_count || 0}</span>
+                                    </button>
+                                ` : `
+                                    <div class="like-count-display">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                        </svg>
+                                        <span class="like-count">${caseItem.likes_count || 0}</span>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
                     </div>
                 `;
 
                 grid.appendChild(card);
             });
+        }
+
+        async function toggleLike(caseId, button) {
+            if (!currentUserId) {
+                window.location.href = '{{ url_for("login_page") }}';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/cases/${caseId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_id: parseInt(currentUserId) })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const svg = button.querySelector('svg');
+                    const likeCount = button.querySelector('.like-count');
+                    
+                    if (data.is_liked) {
+                        button.classList.add('liked');
+                        svg.setAttribute('fill', 'currentColor');
+                    } else {
+                        button.classList.remove('liked');
+                        svg.setAttribute('fill', 'none');
+                    }
+                    
+                    likeCount.textContent = data.likes_count;
+                }
+            } catch (error) {
+                console.error('Ошибка при лайке:', error);
+            }
         }
 
         function escapeHtml(text) {
@@ -170,7 +258,7 @@
         }
 
         function viewCase(caseId) {
-            window.location.href = `case-detail.html?id=${caseId}`;
+            window.location.href = `/case/${caseId}`;
         }
 
         // Обработчики событий
@@ -192,3 +280,4 @@
     </script>
 </body>
 </html>
+

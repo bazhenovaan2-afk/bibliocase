@@ -35,6 +35,34 @@
     color: var(--primary);
 }
 
+.create-case-nav .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.create-case-nav .user-name {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.create-case-nav .logout-btn {
+    background-color: transparent;
+    border: 2px solid var(--border);
+    color: var(--text);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.create-case-nav .logout-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
 .create-case-main {
     max-width: 900px;
     margin: 3rem auto;
