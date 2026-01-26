@@ -1,186 +1,186 @@
 <!doctype html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Главная - BiblioCase</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/default-settings.css') }}">
-</head>
-<body>
-    <div class="main-page-container">
-        <!-- Header -->
-        <header class="main-page-header">
-            <h1 class="main-page-logo">BiblioCase</h1>
-            <nav class="main-page-nav">
-                <a href="{{ url_for('collections') }}">Коллекции</a>
-                <a href="{{ url_for('create_case_page') }}">Создать кейс</a>
-                <span id="user-profile" class="user-profile" style="display: none;">
-                    <span class="user-name" id="user-name"></span>
-                    <button class="logout-btn" id="logout-btn" onclick="logout()">Выйти</button>
-                </span>
-                <a href="{{ url_for('login_page') }}" id="login-link" class="login-link">Войти</a>
-            </nav>
-        </header>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Главная - BiblioCase</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/default-settings.css') }}" />
+        <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" />
+    </head>
+    <body>
+        <div class="main-page-container">
+            <!-- Header -->
+            <header class="main-page-header">
+                <h1 class="main-page-logo">BiblioCase</h1>
+                <nav class="main-page-nav">
+                    <a href="{{ url_for('collections') }}">Коллекции</a>
+                    <a href="{{ url_for('create_case_page') }}">Создать кейс</a>
+                    <span id="user-profile" class="user-profile" style="display: none">
+                        <span class="user-name" id="user-name"></span>
+                        <button class="logout-btn" id="logout-btn" onclick="logout()">Выйти</button>
+                    </span>
+                    <a href="{{ url_for('login_page') }}" id="login-link" class="login-link">Войти</a>
+                </nav>
+            </header>
 
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <div class="hero-content">
-                <h1 class="hero-title">Сохраняй и делись своими профессиональными кейсами</h1>
-                <p class="hero-subtitle">Платформа для обмена опытом и знаниями</p>
-                <div class="hero-actions">
-                    <a href="{{ url_for('create_case_page') }}" class="btn-hero-primary">Создать первый кейс</a>
-                    <a href="{{ url_for('collections') }}" class="btn-hero-secondary">Просмотреть коллекции</a>
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">Сохраняй и делись своими профессиональными кейсами</h1>
+                    <p class="hero-subtitle">Платформа для обмена опытом и знаниями</p>
+                    <div class="hero-actions">
+                        <a href="{{ url_for('create_case_page') }}" class="btn-hero-primary">Создать первый кейс</a>
+                        <a href="{{ url_for('collections') }}" class="btn-hero-secondary">Просмотреть коллекции</a>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Statistics Section -->
-        <section class="stats-section">
-            <div class="stats-container">
-                <div class="stat-item">
-                    <h3 class="stat-number" id="cases-count">0</h3>
-                    <p class="stat-label">кейсов</p>
+            <!-- Statistics Section -->
+            <section class="stats-section">
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <h3 class="stat-number" id="cases-count">0</h3>
+                        <p class="stat-label">кейсов</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 class="stat-number" id="users-count">0</h3>
+                        <p class="stat-label">авторов</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 class="stat-number" id="categories-count">0</h3>
+                        <p class="stat-label">категорий</p>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <h3 class="stat-number" id="users-count">0</h3>
-                    <p class="stat-label">авторов</p>
+            </section>
+
+            <!-- Cases Section -->
+            <section class="cases-section">
+                <div class="container">
+                    <h2 class="section-title">Последние кейсы</h2>
+
+                    <div id="loading" class="loading-indicator" style="display: none">
+                        <p>Загрузка кейсов...</p>
+                    </div>
+
+                    <div id="empty-state" class="empty-state" style="display: none">
+                        <p>Кейсы пока не добавлены. <a href="{{ url_for('create_case_page') }}">Создайте первый кейс!</a></p>
+                    </div>
+
+                    <div class="masonry-grid" id="cases-grid">
+                        <!-- Кейсы будут загружены динамически -->
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <h3 class="stat-number" id="categories-count">0</h3>
-                    <p class="stat-label">категорий</p>
-                </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Cases Section -->
-        <section class="cases-section">
-            <div class="container">
-                <h2 class="section-title">Последние кейсы</h2>
-                
-                <div id="loading" class="loading-indicator" style="display: none;">
-                    <p>Загрузка кейсов...</p>
-                </div>
+            <!-- Footer -->
+            <footer class="main-footer">
+                <p>&copy; 2025 BiblioCase. Все права защищены.</p>
+            </footer>
+        </div>
 
-                <div id="empty-state" class="empty-state" style="display: none;">
-                    <p>Кейсы пока не добавлены. <a href="{{ url_for('create_case_page') }}">Создайте первый кейс!</a></p>
-                </div>
+        <script>
+            const API_URL = "http://localhost:5000/api";
 
-                <div class="masonry-grid" id="cases-grid">
-                    <!-- Кейсы будут загружены динамически -->
-                </div>
-            </div>
-        </section>
+            // Проверка авторизации
+            const currentUserId = localStorage.getItem("user_id");
+            const username = localStorage.getItem("username");
+            const isAdmin = localStorage.getItem("is_admin") === "true";
 
-        <!-- Footer -->
-        <footer class="main-footer">
-            <p>&copy; 2025 BiblioCase. Все права защищены.</p>
-        </footer>
-    </div>
+            if (username && currentUserId) {
+                document.getElementById("login-link").style.display = "none";
+                document.getElementById("user-profile").style.display = "flex";
+                document.getElementById("user-name").textContent = username;
 
-    <script>
-        const API_URL = 'http://localhost:5000/api';
-        
-        // Проверка авторизации
-        const currentUserId = localStorage.getItem('user_id');
-        const username = localStorage.getItem('username');
-        const isAdmin = localStorage.getItem('is_admin') === 'true';
-        
-        if (username && currentUserId) {
-            document.getElementById('login-link').style.display = 'none';
-            document.getElementById('user-profile').style.display = 'flex';
-            document.getElementById('user-name').textContent = username;
-            
-            // Добавляем ссылку на модерацию для админа
-            if (isAdmin) {
-                const nav = document.querySelector('.main-page-nav');
-                const moderateLink = document.createElement('a');
-                moderateLink.href = '/admin/moderate';
-                moderateLink.textContent = 'Модерация';
-                moderateLink.style.color = 'var(--primary)';
-                moderateLink.style.fontWeight = '600';
-                nav.insertBefore(moderateLink, nav.firstChild);
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('user_id');
-            localStorage.removeItem('username');
-            localStorage.removeItem('is_admin');
-            window.location.reload();
-        }
-        
-        // Загрузка статистики
-        async function loadStats() {
-            try {
-                const response = await fetch(`${API_URL}/stats`);
-                const stats = await response.json();
-                
-                document.getElementById('cases-count').textContent = stats.cases || 0;
-                document.getElementById('users-count').textContent = stats.users || 0;
-                document.getElementById('categories-count').textContent = stats.categories || 0;
-            } catch (error) {
-                console.error('Ошибка загрузки статистики:', error);
-            }
-        }
-
-        // Загрузка кейсов
-        async function loadCases() {
-            const loadingDiv = document.getElementById('loading');
-            const emptyState = document.getElementById('empty-state');
-            const grid = document.getElementById('cases-grid');
-            
-            loadingDiv.style.display = 'block';
-            emptyState.style.display = 'none';
-            grid.innerHTML = '';
-
-            try {
-                let url = `${API_URL}/cases`;
-                if (currentUserId) {
-                    url += `?user_id=${currentUserId}`;
+                // Добавляем ссылку на модерацию для админа
+                if (isAdmin) {
+                    const nav = document.querySelector(".main-page-nav");
+                    const moderateLink = document.createElement("a");
+                    moderateLink.href = "/admin/moderate";
+                    moderateLink.textContent = "Модерация";
+                    moderateLink.style.color = "var(--primary)";
+                    moderateLink.style.fontWeight = "600";
+                    nav.insertBefore(moderateLink, nav.firstChild);
                 }
-
-                const response = await fetch(url);
-                const cases = await response.json();
-
-                loadingDiv.style.display = 'none';
-
-                if (cases.length === 0) {
-                    emptyState.style.display = 'block';
-                    return;
-                }
-
-                // Показываем только первые 6 кейсов на главной
-                displayCases(cases.slice(0, 6));
-            } catch (error) {
-                loadingDiv.style.display = 'none';
-                emptyState.style.display = 'block';
-                console.error('Ошибка загрузки кейсов:', error);
             }
-        }
 
-        // Отображение кейсов
-        function displayCases(cases) {
-            const grid = document.getElementById('cases-grid');
-            grid.innerHTML = '';
+            function logout() {
+                localStorage.removeItem("user_id");
+                localStorage.removeItem("username");
+                localStorage.removeItem("is_admin");
+                window.location.reload();
+            }
 
-            cases.forEach((caseItem, index) => {
-                const card = document.createElement('div');
-                card.className = `card card-offset-${(index % 3) + 1}`;
-                card.onclick = (e) => {
-                    // Не переходить на страницу кейса при клике на лайк
-                    if (!e.target.closest('.like-button')) {
-                        viewCase(caseItem.id);
+            // Загрузка статистики
+            async function loadStats() {
+                try {
+                    const response = await fetch(`${API_URL}/stats`);
+                    const stats = await response.json();
+
+                    document.getElementById("cases-count").textContent = stats.cases || 0;
+                    document.getElementById("users-count").textContent = stats.users || 0;
+                    document.getElementById("categories-count").textContent = stats.categories || 0;
+                } catch (error) {
+                    console.error("Ошибка загрузки статистики:", error);
+                }
+            }
+
+            // Загрузка кейсов
+            async function loadCases() {
+                const loadingDiv = document.getElementById("loading");
+                const emptyState = document.getElementById("empty-state");
+                const grid = document.getElementById("cases-grid");
+
+                loadingDiv.style.display = "block";
+                emptyState.style.display = "none";
+                grid.innerHTML = "";
+
+                try {
+                    let url = `${API_URL}/cases`;
+                    if (currentUserId) {
+                        url += `?user_id=${currentUserId}`;
                     }
-                };
 
-                const imageUrl = caseItem.image_path 
-                    ? `http://localhost:5000${caseItem.image_path}`
-                    : 'https://via.placeholder.com/400x280?text=No+Image';
+                    const response = await fetch(url);
+                    const cases = await response.json();
 
-                card.innerHTML = `
+                    loadingDiv.style.display = "none";
+
+                    if (cases.length === 0) {
+                        emptyState.style.display = "block";
+                        return;
+                    }
+
+                    // Показываем только первые 6 кейсов на главной
+                    displayCases(cases.slice(0, 6));
+                } catch (error) {
+                    loadingDiv.style.display = "none";
+                    emptyState.style.display = "block";
+                    console.error("Ошибка загрузки кейсов:", error);
+                }
+            }
+
+            // Отображение кейсов
+            function displayCases(cases) {
+                const grid = document.getElementById("cases-grid");
+                grid.innerHTML = "";
+
+                cases.forEach((caseItem, index) => {
+                    const card = document.createElement("div");
+                    card.className = `card card-offset-${(index % 3) + 1}`;
+                    card.onclick = (e) => {
+                        // Не переходить на страницу кейса при клике на лайк
+                        if (!e.target.closest(".like-button")) {
+                            viewCase(caseItem.id);
+                        }
+                    };
+
+                    const imageUrl = caseItem.image_path
+                        ? `http://localhost:5000${caseItem.image_path}`
+                        : "https://via.placeholder.com/400x280?text=No+Image";
+
+                    card.innerHTML = `
                     <div class="card-image">
                         <img src="${imageUrl}" alt="${escapeHtml(caseItem.title)}" onerror="this.src='https://via.placeholder.com/400x280?text=No+Image'">
                     </div>
@@ -188,82 +188,86 @@
                         <h3 class="card-title">${escapeHtml(caseItem.title)}</h3>
                         <p class="card-category">${escapeHtml(caseItem.category)}</p>
                         <div class="card-footer">
-                            <p class="card-author">Автор: ${escapeHtml(caseItem.username || 'Неизвестен')}</p>
+                            <p class="card-author">Автор: ${escapeHtml(caseItem.username || "Неизвестен")}</p>
                             <div class="like-container">
-                                ${currentUserId ? `
-                                    <button class="like-button ${caseItem.is_liked ? 'liked' : ''}" 
+                                ${
+                                    currentUserId
+                                        ? `
+                                    <button class="like-button ${caseItem.is_liked ? "liked" : ""}" 
                                             onclick="event.stopPropagation(); toggleLike(${caseItem.id}, this)">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="${caseItem.is_liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="${caseItem.is_liked ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2">
                                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                         </svg>
                                         <span class="like-count">${caseItem.likes_count || 0}</span>
                                     </button>
-                                ` : `
+                                `
+                                        : `
                                     <div class="like-count-display">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                                         </svg>
                                         <span class="like-count">${caseItem.likes_count || 0}</span>
                                     </div>
-                                `}
+                                `
+                                }
                             </div>
                         </div>
                     </div>
                 `;
 
-                grid.appendChild(card);
-            });
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function viewCase(caseId) {
-            window.location.href = `/case/${caseId}`;
-        }
-
-        async function toggleLike(caseId, button) {
-            if (!currentUserId) {
-                window.location.href = '{{ url_for("login_page") }}';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/cases/${caseId}/like`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ user_id: parseInt(currentUserId) })
+                    grid.appendChild(card);
                 });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    const svg = button.querySelector('svg');
-                    const likeCount = button.querySelector('.like-count');
-                    
-                    if (data.is_liked) {
-                        button.classList.add('liked');
-                        svg.setAttribute('fill', 'currentColor');
-                    } else {
-                        button.classList.remove('liked');
-                        svg.setAttribute('fill', 'none');
-                    }
-                    
-                    likeCount.textContent = data.likes_count;
-                }
-            } catch (error) {
-                console.error('Ошибка при лайке:', error);
             }
-        }
-        
-        // Инициализация
-        loadStats();
-        loadCases();
-    </script>
-</body>
+
+            function escapeHtml(text) {
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function viewCase(caseId) {
+                window.location.href = `/case/${caseId}`;
+            }
+
+            async function toggleLike(caseId, button) {
+                if (!currentUserId) {
+                    window.location.href = '{{ url_for("login_page") }}';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${API_URL}/cases/${caseId}/like`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ user_id: parseInt(currentUserId) }),
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        const svg = button.querySelector("svg");
+                        const likeCount = button.querySelector(".like-count");
+
+                        if (data.is_liked) {
+                            button.classList.add("liked");
+                            svg.setAttribute("fill", "currentColor");
+                        } else {
+                            button.classList.remove("liked");
+                            svg.setAttribute("fill", "none");
+                        }
+
+                        likeCount.textContent = data.likes_count;
+                    }
+                } catch (error) {
+                    console.error("Ошибка при лайке:", error);
+                }
+            }
+
+            // Инициализация
+            loadStats();
+            loadCases();
+        </script>
+    </body>
 </html>
