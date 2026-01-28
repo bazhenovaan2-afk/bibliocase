@@ -1,0 +1,427 @@
+.create-case-container {
+    min-height: 100vh;
+    background-color: var(--background);
+}
+
+.create-case-header {
+    background-color: var(--surface);
+    padding: 1.5rem 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.create-case-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0;
+    text-align: center;
+}
+
+.create-case-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.create-case-nav a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    padding: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.create-case-nav a:hover {
+    color: var(--primary);
+}
+
+.create-case-nav .user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.create-case-nav .user-name {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.create-case-nav .logout-btn {
+    background-color: transparent;
+    border: 2px solid var(--border);
+    color: var(--text);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.create-case-nav .logout-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.create-case-main {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.form-wrapper {
+    background-color: var(--surface);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.form-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.form-subtitle {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.case-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 1rem;
+}
+
+.form-input,
+.form-textarea {
+    padding: 0.875rem;
+    border: 2px solid var(--border);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-family: inherit;
+    background-color: var(--surface);
+    color: var(--text);
+    transition: all 0.3s ease;
+    outline: none;
+    width: 100%;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30, 95, 91, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 200px;
+    line-height: 1.6;
+}
+
+/* Стили для выпадающего списка */
+.form-group select.form-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.25rem;
+    cursor: pointer;
+}
+
+.form-input-file {
+    display: none;
+}
+
+.image-upload-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.file-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    border: 2px dashed var(--border);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: var(--background);
+    min-height: 150px;
+}
+
+.file-label:hover {
+    border-color: var(--primary);
+    background-color: rgba(30, 95, 91, 0.05);
+}
+
+.upload-icon {
+    width: 3rem;
+    height: 3rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.file-label-text {
+    color: var(--text-muted);
+    font-weight: 500;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.image-preview {
+    position: relative;
+    margin-top: 1rem;
+}
+
+.preview-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    border: 2px solid var(--border);
+}
+
+.remove-image {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.remove-image:hover {
+    background-color: #ff4444;
+    color: white;
+    transform: scale(1.1);
+}
+
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.btn {
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    min-height: 44px;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--surface);
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 95, 91, 0.3);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background-color: var(--surface);
+    color: var(--text);
+    border: 2px solid var(--border);
+}
+
+.btn-secondary:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.loading-spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.form-message {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    display: none;
+    text-align: center;
+}
+
+.form-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.form-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Адаптивность для формы создания кейса */
+@media (min-width: 768px) {
+    .create-case-header {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 1.5rem 2rem;
+    }
+    
+    .create-case-title {
+        font-size: 2rem;
+        text-align: left;
+    }
+    
+    .create-case-nav {
+        gap: 2rem;
+    }
+    
+    .create-case-nav a {
+        font-size: 1rem;
+    }
+    
+    .create-case-main {
+        margin: 3rem auto;
+        padding: 0 2rem;
+    }
+    
+    .form-wrapper {
+        padding: 3rem;
+    }
+    
+    .form-title {
+        font-size: 2.5rem;
+        text-align: left;
+    }
+    
+    .form-subtitle {
+        text-align: left;
+    }
+    
+    .form-actions {
+        flex-direction: row;
+    }
+    
+    .btn {
+        padding: 0.875rem 2rem;
+    }
+    
+    .file-label {
+        padding: 2rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .create-case-header {
+        padding: 1.5rem 3rem;
+    }
+    
+    .create-case-main {
+        padding: 0;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .create-case-nav {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .create-case-nav a {
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+        padding: 0.75rem;
+    }
+    
+    .user-profile {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 1rem;
+    }
+    
+    .logout-btn {
+        width: 100%;
+    }
+    
+    .form-title {
+        font-size: 1.5rem;
+    }
+    
+    .form-wrapper {
+        padding: 1.25rem;
+    }
+    
+    .file-label {
+        min-height: 120px;
+        padding: 1.5rem 1rem;
+    }
+    
+    .upload-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+    
+    .preview-image {
+        max-height: 250px;
+    }
+}

@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Главная - BiblioCase</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/default-settings.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
+    <style>
+        .main-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .hero-section {
+            padding: 2rem 1rem;
+            text-align: center;
+            background-color: var(--surface);
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero-title {
+            font-size: clamp(1.5rem, 6vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+            line-height: 1.3;
+        }
+        
+        .hero-subtitle {
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        
+        .hero-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-hero-primary,
+        .btn-hero-secondary {
+            padding: clamp(0.6rem, 2vw, 1rem) clamp(1rem, 4vw, 2rem);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: block;
+            border: 2px solid transparent;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+        
+        .btn-hero-primary {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .btn-hero-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 95, 91, 0.3);
+        }
+        
+        .btn-hero-secondary {
+            background-color: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-hero-secondary:hover {
+            background-color: rgba(30, 95, 91, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        /* Статистика */
+        .stats-section {
+            background-color: var(--primary);
+            padding: 1.25rem 1rem;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: nowrap;
+            gap: 1rem;
+            text-align: center;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .stats-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .stat-item {
+            flex: 1;
+            min-width: 90px;
+            flex-shrink: 0;
+        }
+        
+        .stat-number {
+            font-size: clamp(1.3rem, 4vw, 2rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            opacity: 0.9;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+        }
+        
+        /* Кейсы */
+        .cases-section {
+            flex: 1;
+            padding: 0 1rem 2rem;
+        }
+        
+        .cases-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-size: clamp(1.25rem, 4vw, 1.5rem);
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        
+        .case-card {
+            background-color: var(--surface);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .case-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+        }
+        
+        .case-image-wrapper {
+            width: 100%;
+            height: clamp(160px, 40vw, 180px);
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .case-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .case-content {
+            padding: 1rem;
+        }
+        
+        .case-category {
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+        
+        .case-title {
+            font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            line-height: 1.4;
+        }
+        
+        .case-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+        
+        .case-author {
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        
+        .like-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .card-like-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.3rem 0.7rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
+        }
+        
+        .card-like-button:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .card-like-button.liked {
+            border-color: var(--primary);
+            color: var(--primary);
+            background-color: rgba(30, 95, 91, 0.1);
+        }
+        
+        .like-count-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
+        }
+        
+        .main-footer {
+            margin-top: auto;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            color: var(--text-muted);
+            background-color: var(--surface);
+            border-top: 1px solid var(--border);
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+        }
+        
+        @media (min-width: 768px) {
+            .hero-section {
+                padding: 3rem 2rem;
+                margin-bottom: 2rem;
+            }
+            
+            .hero-actions {
+                flex-direction: row;
+                justify-content: center;
+                gap: 1.5rem;
+            }
+            
+            .btn-hero-primary,
+            .btn-hero-secondary {
+                width: auto;
+                min-width: 200px;
+            }
+            
+            .stats-section {
+                padding: 1.5rem 2rem;
+                margin-bottom: 2rem;
+            }
+            
+            .stats-container {
+                flex-wrap: wrap;
+                overflow-x: visible;
+                justify-content: space-around;
+            }
+            
+            .stat-item {
+                min-width: auto;
+                flex: 1;
+            }
+            
+            .cases-section {
+                padding: 0 2rem 2rem;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .stats-container {
+                gap: 0.75rem;
+                justify-content: flex-start;
+                padding: 0.5rem 0;
+            }
+            
+            .stat-item {
+                min-width: 80px;
+            }
+            
+            .hero-section {
+                padding: 1.5rem 1rem;
+            }
+            
+            .hero-title {
+                font-size: clamp(1.3rem, 5vw, 1.8rem);
+            }
+            
+            .hero-subtitle {
+                font-size: clamp(0.85rem, 2.8vw, 1rem);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-actions {
+                flex-direction: column;
+            }
+            
+            .btn-hero-primary,
+            .btn-hero-secondary {
+                width: 100%;
+            }
+            
+            .cases-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-container {
+                gap: 0.6rem;
+            }
+            
+            .stat-item {
+                min-width: 70px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .stat-item {
+                min-width: 60px;
+            }
+            
+            .stat-number {
+                font-size: 1.2rem;
+            }
+            
+            .stat-label {
+                font-size: 0.65rem;
+            }
+            
+            .hero-title {
+                font-size: 1.2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Вставляем общую навигацию -->
+        {% include 'nav-header.html' %}
+        
+        <!-- Весь остальной контент БЕЗ ИЗМЕНЕНИЙ -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Сохраняй и делись своими профессиональными кейсами</h1>
+                <p class="hero-subtitle">Платформа для обмена опытом и знаниями</p>
+                <div class="hero-actions">
+                    <a href="{{ url_for('create_case_page') }}" class="btn-hero-primary">Создать первый кейс</a>
+                    <a href="{{ url_for('collections') }}" class="btn-hero-secondary">Просмотреть коллекции</a>
+                </div>
+            </div>
+        </section>
+        
+        <section class="stats-section">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <h3 class="stat-number" id="cases-count">0</h3>
+                    <p class="stat-label">кейсов</p>
+                </div>
+                <div class="stat-item">
+                    <h3 class="stat-number" id="users-count">0</h3>
+                    <p class="stat-label">авторов</p>
+                </div>
+                <div class="stat-item">
+                    <h3 class="stat-number" id="categories-count">0</h3>
+                    <p class="stat-label">категорий</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="cases-section">
+            <div class="cases-container">
+                <h2 class="section-title">Последние кейсы</h2>
+                
+                <div id="loading" class="loading-indicator" style="display: none;">
+                    <p>Загрузка кейсов...</p>
+                </div>
+
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <p>Кейсы пока не добавлены. <a href="{{ url_for('create_case_page') }}">Создайте первый кейс!</a></p>
+                </div>
+
+                <div class="cases-grid" id="cases-grid"></div>
+            </div>
+        </section>
+        
+        <footer class="main-footer">
+            <p>&copy; 2025 BiblioCase. Все права защищены.</p>
+        </footer>
+    </div>
+    
+    <!-- ВАШ JavaScript код БЕЗ ИЗМЕНЕНИЙ -->
+    <script>
+        const API_URL = '/api';
+        
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_URL}/stats`);
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('cases-count').textContent = stats.cases || 0;
+                    document.getElementById('users-count').textContent = stats.users || 0;
+                    document.getElementById('categories-count').textContent = stats.categories || 0;
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки статистики:', error);
+            }
+        }
+        
+        async function loadCases() {
+            const loadingDiv = document.getElementById('loading');
+            const emptyState = document.getElementById('empty-state');
+            const grid = document.getElementById('cases-grid');
+            
+            loadingDiv.style.display = 'block';
+            emptyState.style.display = 'none';
+            grid.innerHTML = '';
+
+            try {
+                const currentUserId = localStorage.getItem('user_id');
+                const userIdParam = (currentUserId && currentUserId !== 'undefined') ? currentUserId : '';
+                const response = await fetch(`${API_URL}/cases?user_id=${userIdParam}&limit=8`);
+                
+                if (response.ok) {
+                    const cases = await response.json();
+                    loadingDiv.style.display = 'none';
+
+                    if (cases.length === 0) {
+                        emptyState.style.display = 'block';
+                        return;
+                    }
+                    
+                    displayCases(cases);
+                } else {
+                    throw new Error('Ошибка сервера');
+                }
+            } catch (error) {
+                loadingDiv.style.display = 'none';
+                emptyState.style.display = 'block';
+                console.error('Ошибка загрузки кейсов:', error);
+            }
+        }
+        
+        function displayCases(cases) {
+            const grid = document.getElementById('cases-grid');
+            grid.innerHTML = '';
+            
+            const currentUserId = localStorage.getItem('user_id');
+
+            cases.forEach((caseItem) => {
+                const card = document.createElement('a');
+                card.className = 'case-card';
+                card.href = `/case/${caseItem.id}`;
+                
+                let imageUrl = '';
+                if (caseItem.image_path) {
+                    imageUrl = caseItem.image_path; 
+                } else {
+                    imageUrl = 'https://via.placeholder.com/400x220?text=No+Image';
+                }
+
+                const safeTitle = escapeHtml(caseItem.title);
+                const safeCategory = escapeHtml(caseItem.category);
+                const safeUsername = escapeHtml(caseItem.username || 'Неизвестен');
+                const isLiked = caseItem.is_liked;
+                const likeClass = isLiked ? 'liked' : '';
+                const fill = isLiked ? 'currentColor' : 'none';
+                
+                let likeButtonHtml = '';
+                if (currentUserId && currentUserId !== 'undefined') {
+                    likeButtonHtml = `
+                        <button class="card-like-button ${likeClass}" onclick="event.stopPropagation(); event.preventDefault(); toggleLike(${caseItem.id}, this)">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="${fill}" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                            <span class="like-count">${caseItem.likes_count}</span>
+                        </button>
+                    `;
+                } else {
+                    likeButtonHtml = `
+                        <div class="like-count-display">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                            <span class="like-count">${caseItem.likes_count}</span>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="case-image-wrapper">
+                        <img src="${imageUrl}" alt="${safeTitle}" class="case-image" 
+                             onerror="this.src='https://via.placeholder.com/400x220?text=No+Image'">
+                    </div>
+                    <div class="case-content">
+                        <span class="case-category">${safeCategory}</span>
+                        <h3 class="case-title">${safeTitle}</h3>
+                        <div class="case-footer">
+                            <span class="case-author">@${safeUsername}</span>
+                            <div class="like-container">
+                                ${likeButtonHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+        
+        async function toggleLike(caseId, button) {
+            const currentUserId = localStorage.getItem('user_id');
+            if (!currentUserId || currentUserId === 'undefined') {
+                window.location.href = "{{ url_for('login_page') }}";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/cases/${caseId}/like`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: parseInt(currentUserId) })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const svg = button.querySelector('svg');
+                    const likeCount = button.querySelector('.like-count');
+                    
+                    if (data.is_liked) {
+                        button.classList.add('liked');
+                        svg.setAttribute('fill', 'currentColor');
+                    } else {
+                        button.classList.remove('liked');
+                        svg.setAttribute('fill', 'none');
+                    }
+                    likeCount.textContent = data.likes_count;
+                }
+            } catch (error) {
+                console.error('Ошибка при лайке:', error);
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Загрузка данных при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+            loadCases();
+        });
+    </script>
+</body>
+</html>

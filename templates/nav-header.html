@@ -1,0 +1,139 @@
+<!-- nav-header.html - Единая навигация для всех страниц -->
+<header class="site-header">
+    <div class="site-header-inner">
+        <a href="{{ url_for('index') }}" class="site-logo">BiblioCase</a>
+        <nav class="site-nav">
+            <a href="{{ url_for('index') }}" class="nav-link">Главная</a>
+            <a href="{{ url_for('collections') }}" class="nav-link">Коллекции</a>
+            <a href="{{ url_for('create_case_page') }}" class="nav-link">Создать кейс</a>
+            
+            <!-- Динамическая часть будет заполнена через JavaScript -->
+            <div id="nav-dynamic-content"></div>
+        </nav>
+    </div>
+</header>
+
+<script>
+// Функция для обновления навигации
+function updateNavigation() {
+    const navDynamic = document.getElementById('nav-dynamic-content');
+    if (!navDynamic) return;
+    
+    const currentUserId = localStorage.getItem('user_id');
+    const username = localStorage.getItem('username');
+    const isAdmin = localStorage.getItem('is_admin') === 'true';
+    
+    // Очищаем содержимое
+    navDynamic.innerHTML = '';
+    
+    if (currentUserId && username) {
+        // Добавляем ссылку на модерацию для админа
+        if (isAdmin) {
+            const moderateLink = document.createElement('a');
+            moderateLink.href = '/admin/moderate';
+            moderateLink.className = 'nav-link';
+            moderateLink.textContent = 'Модерация';
+            moderateLink.style.flexShrink = '0';
+            navDynamic.appendChild(moderateLink);
+        }
+        
+        // Добавляем профиль пользователя
+        const userProfile = document.createElement('div');
+        userProfile.className = 'user-profile';
+        userProfile.innerHTML = `
+            <span class="user-name">${username}</span>
+            <button class="logout-btn" onclick="logout()">Выйти</button>
+        `;
+        navDynamic.appendChild(userProfile);
+    } else {
+        // Добавляем кнопку входа
+        const loginLink = document.createElement('a');
+        loginLink.href = "{{ url_for('login_page') }}";
+        loginLink.className = 'nav-login-btn';
+        loginLink.textContent = 'Войти';
+        loginLink.style.flexShrink = '0';
+        navDynamic.appendChild(loginLink);
+    }
+    
+    // После добавления элементов, проверим, если навигация все еще не помещается
+    setTimeout(() => {
+        checkNavWidth();
+    }, 100);
+}
+
+// Функция выхода
+function logout() {
+    localStorage.removeItem('user_id');
+    localStorage.removeItem('username');
+    localStorage.removeItem('is_admin');
+    window.location.href = "{{ url_for('index') }}";
+}
+
+// Функция для проверки ширины навигации и автоматической настройки
+function checkNavWidth() {
+    const siteNav = document.querySelector('.site-nav');
+    if (!siteNav) return;
+    
+    const navWidth = siteNav.scrollWidth;
+    const containerWidth = siteNav.clientWidth;
+    const viewportWidth = window.innerWidth;
+    
+    // Если содержимое шире контейнера
+    if (navWidth > containerWidth) {
+        siteNav.style.justifyContent = 'flex-start';
+        
+        // На очень узких экранах добавляем компактный режим
+        if (viewportWidth < 400) {
+            siteNav.classList.add('nav-compact');
+        }
+    } else {
+        siteNav.style.justifyContent = 'center';
+        siteNav.classList.remove('nav-compact');
+    }
+    
+    // Логирование для отладки
+    console.log(`Навигация: ${navWidth}px / Контейнер: ${containerWidth}px / Вьюпорт: ${viewportWidth}px`);
+}
+
+// Функция для оптимизации текста на очень узких экранах
+function optimizeNavForMobile() {
+    const viewportWidth = window.innerWidth;
+    const siteNav = document.querySelector('.site-nav');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    if (viewportWidth < 280) {
+        // На экстремально узких экранах сокращаем текст
+        navLinks.forEach(link => {
+            const text = link.textContent;
+            if (text === 'Создать кейс') {
+                link.textContent = 'Создать';
+            } else if (text === 'Модерация') {
+                link.textContent = 'Модерация';
+            }
+        });
+    }
+}
+
+// Обновляем навигацию при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    updateNavigation();
+    
+    // Проверяем ширину навигации после полной загрузки
+    window.addEventListener('load', function() {
+        checkNavWidth();
+        optimizeNavForMobile();
+    });
+    
+    // Проверяем ширину при изменении размера окна
+    window.addEventListener('resize', function() {
+        checkNavWidth();
+        optimizeNavForMobile();
+    });
+    
+    // Проверяем ширину после задержки для полной отрисовки
+    setTimeout(function() {
+        checkNavWidth();
+        optimizeNavForMobile();
+    }, 500);
+});
+</script>

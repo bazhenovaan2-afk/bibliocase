@@ -1,0 +1,97 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #1e5f5b;
+    --primary-dark: #153f3c;
+    --accent: #d4a574;
+    --background: #faf8f5;
+    --surface: #ffffff;
+    --text: #2a2a2a;
+    --text-muted: #6b6b6b;
+    --border: #e5e0d8;
+    
+    font-size: 14px;
+}
+
+/* ГЛОБАЛЬНЫЙ СБРОС ДЛЯ ВСЕХ ССЫЛОК */
+a {
+    text-decoration: none !important;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Стили для горизонтальной прокрутки */
+.scrollable-nav {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* Убираем outline для элементов при фокусе на мобильных */
+@media (max-width: 767px) {
+    button:focus,
+    a:focus {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+    }
+}
+
+/* Кнопки */
+button, .btn {
+    min-height: 44px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    font-family: inherit;
+}
+
+img { 
+    max-width: 100%; 
+    height: auto; 
+    display: block; 
+}
+
+/* Загрузка */
+.loading-indicator, .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+/* Формы */
+.form-input, .form-textarea, .form-select {
+    width: 100%;
+    padding: 0.875rem;
+    border: 2px solid var(--border);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background-color: var(--surface);
+    color: var(--text);
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30, 95, 91, 0.1);
+}
+
+/* Адаптивность */
+@media (min-width: 768px) {
+    :root { font-size: 16px; }
+}

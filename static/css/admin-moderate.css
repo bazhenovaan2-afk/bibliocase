@@ -1,0 +1,322 @@
+.admin-container {
+    min-height: 100vh;
+    background-color: var(--background);
+}
+
+.admin-header {
+    background-color: var(--surface);
+    padding: 1.5rem 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.admin-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0;
+    text-align: center;
+}
+
+.admin-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-nav a {
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    padding: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.admin-nav a:hover {
+    color: var(--primary);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.user-name {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.logout-btn {
+    background-color: transparent;
+    border: 2px solid var(--border);
+    color: var(--text);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.logout-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.admin-main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.admin-title {
+    font-size: 1.75rem;
+    color: var(--primary-dark);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border);
+    text-align: center;
+}
+
+.cases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.case-item {
+    background-color: var(--surface);
+    padding: 1.25rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    border: 1px solid var(--border);
+    
+    /* Новое: делаем элемент интерактивным */
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: relative;
+}
+
+.case-item:hover {
+    background-color: #f9f9f9;
+}
+
+.case-info {
+    flex: 1;
+}
+
+.case-info h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+    line-height: 1.3;
+}
+
+.case-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.case-preview-text {
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* Новое: стили для превью картинки */
+.case-preview-img {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 4px;
+    margin-top: 10px;
+    display: block;
+    border: 1px solid var(--border);
+}
+
+.case-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 0.75rem;
+    width: 100%;
+    /* Кнопки должны быть поверх кликабельной области */
+    position: relative;
+    z-index: 2;
+}
+
+.btn-approve,
+.btn-reject {
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-height: 44px;
+    text-align: center;
+}
+
+.btn-approve {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-approve:hover:not(:disabled) {
+    background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.btn-approve:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-approve.approved {
+    background-color: #6c757d;
+}
+
+.btn-reject {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-reject:hover:not(:disabled) {
+    background-color: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.btn-reject:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-reject.rejected {
+    background-color: #6c757d;
+}
+
+.loading-indicator, .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+/* Адаптивность для админ-панели */
+@media (min-width: 768px) {
+    .admin-header {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 1.5rem 2rem;
+    }
+    
+    .admin-logo {
+        font-size: 1.8rem;
+        text-align: left;
+    }
+    
+    .admin-nav {
+        gap: 2rem;
+    }
+    
+    .admin-nav a {
+        font-size: 1rem;
+    }
+    
+    .admin-main {
+        padding: 3rem 2rem;
+    }
+    
+    .admin-title {
+        font-size: 2rem;
+        text-align: left;
+    }
+    
+    .case-item {
+        flex-direction: row;
+        padding: 1.5rem;
+        gap: 2rem;
+    }
+    
+    .case-actions {
+        flex-direction: column;
+        min-width: 140px;
+        width: auto;
+    }
+    
+    .case-preview-img {
+        max-width: 200px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .admin-header {
+        padding: 1.5rem 3rem;
+    }
+    
+    .admin-main {
+        padding: 3rem;
+    }
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .admin-nav {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+    }
+    
+    .admin-nav a {
+        width: 100%;
+        text-align: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .admin-nav a:last-child {
+        border-bottom: none;
+    }
+    
+    .user-profile {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 1rem;
+        padding: 1rem 0;
+    }
+    
+    .logout-btn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+    
+    .case-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .case-actions {
+        flex-direction: column;
+    }
+}
